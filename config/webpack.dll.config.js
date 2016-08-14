@@ -1,7 +1,7 @@
 var path = require("path");
 var webpack = require('webpack');
 // var assetsPluginInstance = require('../config/assetsPlugin');
-// var AssetsPlugin = require('assets-webpack-plugin');
+var AssetsPlugin = require('assets-webpack-plugin');
 var paths = require('./paths');
 
 var deps = require('../package.json').dependencies;
@@ -23,17 +23,17 @@ var config = {
         ]
     },
     output: {
-        path: path.resolve("build/static"),
+        path: path.resolve("build/static/vendor"),
         filename: "[name].js",
         library: "[name]_[hash]", //和DllPlugin的name对应
         libraryTarget: "var"
     },
     plugins: [
-        // new AssetsPlugin({
-        //     pretty: true,
-        //     path: path.resolve('manifest'),
-        //     update: true
-        // }),
+        new AssetsPlugin({
+            pretty: true,
+            path: path.resolve('manifest'),
+            update: true
+        }),
         new webpack.DllPlugin({
             path: path.resolve("manifest", "vendor-manifest.json"),
             name: "[name]_[hash]",

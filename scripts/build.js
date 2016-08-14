@@ -13,7 +13,8 @@ var server = require('pushstate-server');
 var openBrowser = require('./utils/openBrowser');
 // Remove all content but keep the directory so that
 // if you're in it, you don't end up in Trash
-rimrafSync(paths.appBuild + '/*');
+// rimrafSync(paths.appBuild + '/*');
+rimrafSync(paths.appBuild + '!/static/vendor/**');
 
 console.log('Creating an optimized production build...');
 webpack(config).run(function(err, stats) {
@@ -41,11 +42,11 @@ webpack(config).run(function(err, stats) {
       };
     });
   assets.sort((a, b) => b.size - a.size);
-
   var longestSizeLabelLength = Math.max.apply(null,
     assets.map(a => a.sizeLabel.length)
   );
   assets.forEach(asset => {
+    console.log(asset)
     var sizeLabel = asset.sizeLabel;
     if (sizeLabel.length < longestSizeLabelLength) {
       var rightPadding = ' '.repeat(longestSizeLabelLength - sizeLabel.length);
@@ -59,9 +60,9 @@ webpack(config).run(function(err, stats) {
   console.log();
 
   server.start({
-    port: 3000,
+    port: 9528,
     directory: './build',
     file: '/index.html'
   });
-  openBrowser(3000)
+  openBrowser(9528)
 });

@@ -112,6 +112,7 @@ module.exports = {
             inject: true,
             template: paths.appHtml,
             favicon: paths.appFavicon,
+            vendor_dll:"vendor_dll.js",
             hash: true,
             minify: {
                 removeComments: false,
