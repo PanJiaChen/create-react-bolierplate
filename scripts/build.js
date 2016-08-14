@@ -46,7 +46,6 @@ webpack(config).run(function(err, stats) {
     assets.map(a => a.sizeLabel.length)
   );
   assets.forEach(asset => {
-    console.log(asset)
     var sizeLabel = asset.sizeLabel;
     if (sizeLabel.length < longestSizeLabelLength) {
       var rightPadding = ' '.repeat(longestSizeLabelLength - sizeLabel.length);

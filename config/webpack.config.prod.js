@@ -7,7 +7,7 @@ var url = require('url');
 var paths = require('./paths');
 
 var assetsMap = require('../manifest/webpack-assets.json');
-var vendor_dll=assetsMap.vendor_dll.js;
+var vendor_dll = assetsMap.vendor_dll.js;
 
 var homepagePath = require(paths.appPackageJson).homepage;
 var publicPath = homepagePath ? url.parse(homepagePath).pathname : '/';
@@ -64,17 +64,9 @@ module.exports = {
                 query: require('./babel.prod')
             },
             {
-                test: /\.scss/,
+                test: /\.scss|\.css$/,
                 include: [paths.appSrc, paths.appNodeModules],
-                loader: 'style!css!sass'
-            },
-            {
-                test: /\.css$/,
-                include: [paths.appSrc, paths.appNodeModules],
-                // Disable autoprefixer in css-loader itself:
-                // https://github.com/webpack/css-loader/issues/281
-                // We already have it thanks to postcss.
-                loader: ExtractTextPlugin.extract('style', 'css?-autoprefixer!postcss')
+                loader: ExtractTextPlugin.extract('style', 'css?-autoprefixer!postcss!sass')
             },
             {
                 test: /\.json$/,
@@ -114,7 +106,7 @@ module.exports = {
             inject: true,
             template: paths.appHtml,
             favicon: paths.appFavicon,
-            vendor_dll:vendor_dll,
+            vendor_dll: vendor_dll,
             minify: {
                 removeComments: true,
                 collapseWhitespace: true,
