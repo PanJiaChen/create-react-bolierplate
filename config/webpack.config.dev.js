@@ -1,9 +1,11 @@
 var path = require('path');
 var autoprefixer = require('autoprefixer');
 var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin'); /*to alleviate conflict with osx path*/
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+/*to alleviate conflict with osx path*/
 var CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 var paths = require('./paths');
+
 module.exports = {
     devtool: 'eval',
     cache: true,
@@ -11,7 +13,7 @@ module.exports = {
         require.resolve('webpack-dev-server/client') + '?/',
         require.resolve('webpack/hot/only-dev-server'),
         require.resolve('./polyfills'),
-        path.join(paths.appSrc, 'index')
+        path.join(paths.appSrc, 'entry')
     ],
     output: {
         // Next line is not used in dev but WebpackDevServer crashes without it:
@@ -32,7 +34,7 @@ module.exports = {
             // a dependency in generated projects.
             // See https://github.com/facebookincubator/create-react-app/issues/255
             'babel-runtime/regenerator': require.resolve('babel-runtime/regenerator'),
-            'config': paths.appConfig + "productionConfig"+(process.env.NODE_ENV || "development") + '.js',
+            'config': paths.appConfig  + (process.env.NODE_ENV || "development") + '.js',
         }
     },
     resolveLoader: {
@@ -40,13 +42,13 @@ module.exports = {
         moduleTemplates: ['*-loader']
     },
     module: {
-        preLoaders: [
-            {
-                test: /\.js$/,
-                loader: 'eslint',
-                include: paths.appSrc,
-            }
-        ],
+        // preLoaders: [
+        //     {
+        //         test: /\.js$/,
+        //         loader: 'eslint',
+        //         include: paths.appSrc,
+        //     }
+        // ],
         loaders: [
             {
                 test: /\.js$/,
@@ -60,9 +62,14 @@ module.exports = {
                 query: require('./babel.dev')
             },
             {
+                test: /\.scss/,
+                include: [paths.appSrc, paths.appNodeModules],
+                loader: 'style!css!sass'
+            },
+            {
                 test: /\.css$/,
                 include: [paths.appSrc, paths.appNodeModules],
-                loader: 'style!css!postcss'
+                loader: 'style!css'
             },
             {
                 test: /\.json$/,
@@ -97,16 +104,25 @@ module.exports = {
     //     return [autoprefixer];
     // },
     plugins: [
+        new webpack.DllReferencePlugin({
+            context: '.',
+            manifest: require(paths.manifestSrc + '/vendor-manifest-dev.json'),
+        }),
         new HtmlWebpackPlugin({
             inject: true,
             template: paths.appHtml,
             favicon: paths.appFavicon,
+            hash: true,
+            minify: {
+                removeComments: false,
+                collapseWhitespace: false
+            }
         }),
         new webpack.DefinePlugin({'process.env.NODE_ENV': '"development"'}),
         new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.optimize.DedupePlugin(),
         new webpack.NoErrorsPlugin(),
         new webpack.HotModuleReplacementPlugin(),
-        new CaseSensitivePathsPlugin()
+        new CaseSensitivePathsPlugin(),
     ]
 };
